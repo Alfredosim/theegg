@@ -70157,111 +70157,104 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-				data: function data() {
-								return {
-												stats: {
-																transCount: '',
-																depoCount: '',
-																retiroCount: ''
-												},
-												fill: {
-																data: [],
-																avg: '',
-																count: '',
-																max: '',
-																min: ''
-												},
-												filtro: '',
-												dataWeek: {
-																labels: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'],
-																datasets: [{
-																				label: 'Transacciones Semanales',
-																				backgroundColor: '#f87979',
-																				data: []
-																}]
-												},
-												dataYear: {
-																labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-																datasets: [{
-																				label: 'Transacciones Anuales',
-																				backgroundColor: '#f87979',
-																				data: []
-																}]
-												}
+	data: function data() {
+		return {
+			loaded: false,
+			stats: {
+				transCount: '',
+				depoCount: '',
+				retiroCount: ''
+			},
+			fill: {
+				avg: '',
+				count: '',
+				max: '',
+				min: ''
+			},
+			filtro: '',
+			options: null,
+			chartdata: {
+				labels: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'],
+				datasets: [{
+					label: 'Transacciones Semanales',
+					backgroundColor: '#f87979',
+					data: []
+				}]
+			}
+		};
+	},
+	components: { Bar: __WEBPACK_IMPORTED_MODULE_0__charts_Bar_vue___default.a },
+	mounted: function mounted() {
+		this.buscar();
+		this.lastWeek();
+	},
 
-								};
-				},
-				components: {
-								Bar: __WEBPACK_IMPORTED_MODULE_0__charts_Bar_vue___default.a
-				},
-				mounted: function mounted() {
-								this.buscar();
-								this.lastWeek();
-				},
+	methods: {
+		buscar: function buscar() {
+			var _this = this;
 
-				methods: {
-								buscar: function buscar() {
-												var _this = this;
+			var urlDashboard = 'api/dashboard';
+			axios.get(urlDashboard).then(function (response) {
+				_this.stats.transCount = response.data.transCount;
+				_this.stats.depoCount = response.data.depoCount;
+				_this.stats.retiroCount = response.data.retiroCount;
+			});
+		},
+		lastWeek: function lastWeek() {
+			var _this2 = this;
 
-												var urlDashboard = 'api/dashboard';
-												axios.get(urlDashboard).then(function (response) {
-																_this.stats.transCount = response.data.transCount;
-																_this.stats.depoCount = response.data.depoCount;
-																_this.stats.retiroCount = response.data.retiroCount;
-												});
-								},
-								lastWeek: function lastWeek() {
-												var _this2 = this;
-
-												axios.get('api/lastweek').then(function (response) {
-
-																_this2.fill.data = response.data.data;
-																_this2.fill.avg = response.data.average;
-																_this2.fill.max = response.data.max;
-																_this2.fill.min = response.data.min;
-																_this2.fill.count = response.data.trans.length;
-																var da = response.data.data;
-																// this.dataWeek.datasets.data = response.data.data.map(item);
-																console.log();
-																var datasets = [{
-																				label: 'Transacciones Semanales',
-																				backgroundColor: '#f87979',
-																				data: response.data.data
-																}];
-																_this2.dataWeek = {
-																				datasets: datasets
-																};
-												});
-								},
-								lastMonth: function lastMonth() {
-												var _this3 = this;
-
-												axios.get('api/lastmonth').then(function (response) {
-																console.log(response.data);
-																_this3.stats.transCount = response.data.transCount;
-																_this3.stats.depoCount = response.data.depoCount;
-																_this3.stats.retiroCount = response.data.retiroCount;
-												});
-								},
-								lastYear: function lastYear() {
-												var _this4 = this;
-
-												axios.get('api/lastyear').then(function (response) {
-																console.log(response.data);
-																_this4.stats.transCount = response.data.transCount;
-																_this4.stats.depoCount = response.data.depoCount;
-																_this4.stats.retiroCount = response.data.retiroCount;
-												});
-								}
-				},
-				computed: {
-								add: function add() {}
+			this.loaded = false;
+			axios.get('api/lastweek').then(function (response) {
+				_this2.fill.avg = response.data.average;
+				_this2.fill.max = response.data.max;
+				_this2.fill.min = response.data.min;
+				_this2.fill.count = response.data.count;
+				if (_this2.fill.count > 0) {
+					_this2.chartdata.datasets[0].data = response.data.data;
+					_this2.loaded = true;
+				} else {
+					_this2.loaded = false;
 				}
+			}).catch(function (error) {
+				_this2.loaded = false;
+				console.log(error.response.data);
+			});
+		},
+		lastMonth: function lastMonth() {
+			var _this3 = this;
+
+			axios.get('api/lastmonth').then(function (response) {
+				console.log(response.data);
+				_this3.stats.transCount = response.data.transCount;
+				_this3.stats.depoCount = response.data.depoCount;
+				_this3.stats.retiroCount = response.data.retiroCount;
+			});
+		},
+		lastYear: function lastYear() {
+			var _this4 = this;
+
+			axios.get('api/lastyear').then(function (response) {
+				console.log(response.data);
+				_this4.stats.transCount = response.data.transCount;
+				_this4.stats.depoCount = response.data.depoCount;
+				_this4.stats.retiroCount = response.data.retiroCount;
+			});
+		}
+	},
+	computed: {
+		add: function add() {}
+	}
 });
 
 /***/ }),
@@ -70323,9 +70316,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   extends: __WEBPACK_IMPORTED_MODULE_0_vue_chartjs__["a" /* Bar */],
-  props: ['dataWeek', 'options'],
+  props: {
+    chartdata: {
+      type: Object,
+      default: null
+    },
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   mounted: function mounted() {
-    this.renderChart(this.dataWeek, { responsive: true, maintainAspectRatio: false });
+    this.renderChart(this.chartdata, this.options);
   }
 });
 
@@ -85638,7 +85640,7 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("7 Dias")]
+                  [_vm._v("Semana")]
                 ),
                 _vm._v(" "),
                 _c(
@@ -85678,14 +85680,32 @@ var render = function() {
                 _c("div", { staticClass: "card" }, [
                   _vm._m(4),
                   _vm._v(" "),
-                  _c("div", { staticClass: "card-body" }, [
-                    _c(
-                      "div",
-                      { staticClass: "small" },
-                      [_c("bar", { attrs: { dataWeek: _vm.dataWeek } })],
-                      1
-                    )
-                  ])
+                  _c(
+                    "div",
+                    { staticClass: "card-body" },
+                    [
+                      _vm.loaded
+                        ? _c("bar", {
+                            attrs: {
+                              chartdata: _vm.chartdata,
+                              options: _vm.options
+                            }
+                          })
+                        : _c(
+                            "div",
+                            {
+                              staticClass: "alert alert-info",
+                              attrs: { role: "alert" }
+                            },
+                            [
+                              _vm._v(
+                                "\r\n\t\t\t\t\t\t\t\t\t\t  No tienes transacciones...\r\n\t\t\t\t\t\t\t\t\t"
+                              )
+                            ]
+                          )
+                    ],
+                    1
+                  )
                 ])
               ]),
               _vm._v(" "),

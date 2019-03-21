@@ -22,9 +22,11 @@ class DashboardController extends Controller
      */
     public function home()
     {
-        $transCount = Transaccion::where('user_id', $this->user->id)->sum('monto');
-        $depoCount = Transaccion::where('user_id', $this->user->id)->where('tipo', 1)->sum('monto');
-        $retiroCount = Transaccion::where('user_id', $this->user->id)->where('tipo', 0)->sum('monto');
+        $trans = Transaccion::where('user_id', $this->user->id)->get();
+        $transCount = $trans->sum('monto');
+        $depoCount = $trans->where('tipo', 1)->sum('monto');
+        $retiroCount = $trans->where('tipo', 0)->sum('monto');
+
         return response()->json([
                 'transCount' => $transCount,
                 'depoCount' => $depoCount,
@@ -33,7 +35,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Retorna los registros de los ultimos 7 dias.
+     * Retorna los registros de la semana actual.
      *
      * @return \Illuminate\Http\Response
      */
@@ -46,6 +48,7 @@ class DashboardController extends Controller
         $max = $transOri->max('monto');
         $min = $transOri->min('monto');
         $avr = $transOri->avg('monto');
+        $count = $transOri->count();
         $dates = collect();
 
         foreach( range( 0, 6 ) AS $i ) {
@@ -63,7 +66,7 @@ class DashboardController extends Controller
         $data = $dates->merge( $trans );
         $data = $data->values();
         return response()->json([
-                'trans' => $transOri,
+                'count' => $count,
                 'data' => $data,
                 'average' => $avr,
                 'max' => $max,

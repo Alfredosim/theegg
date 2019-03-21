@@ -49,7 +49,7 @@
 						    Filtro
 						  </button>
 						  <div class="dropdown-menu dropdown-menu-right">
-						    <button class="dropdown-item" type="button" @change="lastWeek()">7 Dias</button>
+						    <button class="dropdown-item" type="button" @change="lastWeek()">Semana</button>
 						    <button class="dropdown-item" type="button" @change="lastMonth()">Mes</button>
 						    <button class="dropdown-item" type="button" @change="lastYear()">Año</button>
 						  </div>
@@ -66,10 +66,16 @@
 					            </div>
 
 					            <div class="card-body">
-					            	<div class="small">					            	
-					                <bar :dataWeek="dataWeek"></bar>
+					            	<bar
+								      v-if="loaded"
+								      :chartdata="chartdata"
+								      :options="options"/>
+								    
+								    <div v-else class="alert alert-info" role="alert">
+										  No tienes transacciones...
+									</div>
+																		    
 					                </div>
-					            </div>
 					        </div>
 					    </div>
 
@@ -127,20 +133,21 @@ import 'moment/locale/es';
     export default {
         data: function () {
   			return {
+  				loaded: false,
   				stats: {
   					transCount: '',
   					depoCount: '',
   					retiroCount: ''
   				},
   				fill: {
-  					data: [],
   					avg: '',
   					count: '',
   					max: '', 
   					min: ''
   				},
   				filtro: '',
-	  			dataWeek: {
+  				options: null,
+	  			chartdata: {
 			        labels: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'],
 			        datasets: [
 			        	{
@@ -150,22 +157,9 @@ import 'moment/locale/es';
 			        	}
 			        ]
 		        },
-		        dataYear: {
-			        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-			        datasets: [
-			        	{
-			        		label: 'Transacciones Anuales',
-			        		backgroundColor: '#f87979', 
-			        		data: []
-			        	}
-			        ]
-		        }
-
     		}
 		},
-		components: {
-        	Bar
-    	},
+		components: { Bar },
     	mounted() {
             this.buscar();
             this.lastWeek();
@@ -174,50 +168,43 @@ import 'moment/locale/es';
  			buscar() {
  				var urlDashboard = 'api/dashboard';
 	    		axios.get(urlDashboard).then(response => {
-	    		this.stats.transCount = response.data.transCount;			
-	    		this.stats.depoCount = response.data.depoCount;
-	    		this.stats.retiroCount = response.data.retiroCount;
+		    		this.stats.transCount = response.data.transCount;			
+		    		this.stats.depoCount = response.data.depoCount;
+		    		this.stats.retiroCount = response.data.retiroCount;
 	    		});
         	},
         	lastWeek() {
-	    		axios.get('api/lastweek').then(response => {
-	    		
-	    		this.fill.data = response.data.data;
-	    		this.fill.avg = response.data.average;
-	    		this.fill.max = response.data.max;
-	    		this.fill.min = response.data.min;
-	    		this.fill.count = response.data.trans.length;
-	    		const da = response.data.data;
-	    		// this.dataWeek.datasets.data = response.data.data.map(item);
-	    		console.log();
-	    		const datasets = [
-		        	{
-			          	label: 'Transacciones Semanales',
-				        backgroundColor: '#f87979',
-			          	data: response.data.data
-		        	}
-      			]
-      			this.dataWeek = {
-        			datasets: datasets,        			
-      			}	    		
-
-
+        		this.loaded = false
+	    		axios.get('api/lastweek').then(response => {	    		
+		    		this.fill.avg = response.data.average;
+		    		this.fill.max = response.data.max;
+		    		this.fill.min = response.data.min;
+		    		this.fill.count = response.data.count;
+		    		if (this.fill.count > 0) {
+		    			this.chartdata.datasets[0].data = response.data.data;
+		    			this.loaded = true;
+		    		} else {
+		    			this.loaded = false
+		    		}		    		
+	    		}).catch(error => {
+	    			this.loaded = false
+	    			console.log(error.response.data)
 	    		});
         	},
         	lastMonth() {
 	    		axios.get('api/lastmonth').then(response => {
-	    		console.log(response.data);
-	    		this.stats.transCount = response.data.transCount;			
-	    		this.stats.depoCount = response.data.depoCount;
-	    		this.stats.retiroCount = response.data.retiroCount;
+		    		console.log(response.data);
+		    		this.stats.transCount = response.data.transCount;			
+		    		this.stats.depoCount = response.data.depoCount;
+		    		this.stats.retiroCount = response.data.retiroCount;
 	    		});
         	},
         	lastYear() {
 	    		axios.get('api/lastyear').then(response => {
-	    		console.log(response.data);
-	    		this.stats.transCount = response.data.transCount;			
-	    		this.stats.depoCount = response.data.depoCount;
-	    		this.stats.retiroCount = response.data.retiroCount;
+		    		console.log(response.data);
+		    		this.stats.transCount = response.data.transCount;			
+		    		this.stats.depoCount = response.data.depoCount;
+		    		this.stats.retiroCount = response.data.retiroCount;
 	    		});
         	}
         },
