@@ -61,7 +61,6 @@
                         <a href="#!" @click.prevent="logout" class="dropdown-item">Logout</a>
                     </div>
                 </li>
-
             </ul>
         </div>
     </nav>

@@ -2,7 +2,7 @@
 <div class="modal fade" id="createClienteModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog" role="document">
 	    <div class="modal-content">
-	    	<form>
+	    	<form @submit.prevent="crear()" autocomplete="off">
 	    	<div class="modal-header">
 	        	<h5 class="modal-title" id="createModal">
                 	<i class="fas fa-user-plus" aria-hidden="true"></i>
@@ -40,10 +40,10 @@
             	</div>            	
 			</div>
 	      	<div class="modal-footer">
-	      		<button type="submit" @click.prevent="crear()" class="btn btn-primary">Registrar</button>
+	      		<button type="submit" class="btn btn-primary">Registrar</button>
 		      	<button type="reset" @click="reset()" class="btn btn-danger" data-dismiss="modal">Cancelar</button>	            
 	      	</div>
-	      	</form>
+	      </form>
 	    </div>
 	  	</div>
 	</div>
@@ -70,8 +70,9 @@ import ValidationErrors from '../ValidationErrors.vue';
         	crear() { 				
 	    		axios.post('api/usuarios/crear',this.usuarioForm).then(response => {
 	    			this.reset();
-	    			$('#createClienteModal').modal('hide');
-	    			toastr.success('Usuario registrado satisfactoriamente');
+	    			$('#createClienteModal').modal('hide');	    			
+	    			toastr.success(response.data.message);
+	    			this.$emit('completed');
 	    		}).catch(error => {
 	    			this.boo = true;
 	    			this.errors = error.response.data.errors;

@@ -9,7 +9,7 @@
 
 	<hr>
 	<!-- Modal -->
-	<create-form></create-form>
+	<create-form @completed="addUser"></create-form>
 
 		<div class="card-deck">
     	<div class="card">
@@ -60,7 +60,7 @@
                         </thead>                        
                         <tr v-for="user in usuarios" :key="user.id" class="text-center">
                             <td>{{ user.usuario }}</td>
-                            <td class="text-center">
+                            <td>
                                 
                                 <span class="badge badge-primary" v-show="user.rol === 0">Administrador</span>
        
@@ -123,6 +123,7 @@ import CreateForm from '../usuarios/CreateForm.vue';
  			buscar(page_url) {
  				var urlUsuarios = page_url || 'api/usuarios';
 	    		axios.get(urlUsuarios).then(response => {
+	    			console.log(response);
 	    			if (response.data.total > 0) {	    				
 	    				this.usuarios = response.data.data;				
 	    				this.makePagination(response.data);
@@ -136,6 +137,9 @@ import CreateForm from '../usuarios/CreateForm.vue';
 	    			}
 					
 	    		});
+        	},
+        	addUser(){
+        		this.buscar();
         	},
         	makePagination(data) {
 				let pagination = {

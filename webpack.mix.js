@@ -15,12 +15,9 @@ mix.js('resources/js/app.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css')
    .browserSync({
             host: 'http://bscobro.test',
-   	      open: false,
+   	      	open: false,
             port: '8000',       
-   		files: ['resources/views/**/*.php',
-         		'app/**/*.php',
-         		'routes/**/*.php',
-         		'public/js/*.js',
+   		files: ['public/js/*.js',
          		'public/css/*.css'
         ]
    });

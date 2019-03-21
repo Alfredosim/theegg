@@ -19,6 +19,10 @@ class UserController extends Controller
     {	
         $users = User::orderBy('id', 'desc')->paginate(10);
       	
+        // return response()->json(['body' => new UsersResource($users),
+        //                          'descripcion' => 'Consulta realizada satisfactoriamente',
+        //                          'message' => 'OK',
+        //                          'status' => 200], 200);
         return new UsersResource($users);
     }
 
@@ -56,8 +60,16 @@ class UserController extends Controller
         $user->password = Hash::make($request->input('password'));
         $user->rol = $request->input('rol');      
 
-        $user->save();
-
-        return new UserResource($user);        
+        if ($user->save()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario registrado satisfactoriamente'
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creando el usuario'
+            ], 500);
+        }     
     }
 }

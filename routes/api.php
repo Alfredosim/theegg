@@ -35,6 +35,25 @@ Route::group(['middleware' => 'jwt.auth'], function ($router) {
     Route::get('usuarios/stats', 'UserController@stats');
 
     // Categorias routes
-    Route::apiResource('categoria', 'CategoriaController')->except(['destroy']);
+    Route::post('categorias', 'CategoriaController@index');
+    Route::get('categoriasv2', 'CategoriaController@list');
+    Route::post('categoria/crear', 'CategoriaController@store');
+    Route::get('categoria/{id}', 'CategoriaController@show');
+    Route::put('categoria/{id}', 'CategoriaController@update');
+
+    // Transacciones routes
+    Route::post('transacciones', 'TransaccionController@index');
+    Route::post('transaccion/crear', 'TransaccionController@store');
+    Route::get('transaccion/{id}', 'TransaccionController@show');
+    Route::put('transaccion/{id}', 'TransaccionController@update');
+    Route::delete('transaccion/{id}', 'TransaccionController@destroy');
+
+    //Dashboard routes
+    
     
 });
+
+Route::get('dashboard', 'DashboardController@home');
+Route::get('/lastweek', 'DashboardController@lastWeek');
+Route::get('/lastmonth', 'DashboardController@lastMonth');
+Route::get('/lastyear', 'DashboardController@lastYear');

@@ -8,9 +8,10 @@
 	</h1>
 
 	<hr>
-	<!-- Modal -->
+	<!-- Modal Create-->
 	<create-form></create-form>
-	
+	<!-- Modal Update-->
+	<edit-form :editForm="editForm" @completed="updatedCat"></edit-form>	
 
 	<div class="row">
 	    <div class="col-md-12">
@@ -23,12 +24,12 @@
 	                <form  @submit.prevent="buscar()" autocomplete="off">
 	                	<div class="row justify-content-center">
 
-		                	<div class="form-group col-4">
+		                	<div class="form-group col-md-4">
 								<label for="nombre">Nombre:</label>
 							    <input type="text" class="form-control" v-model="categoria.nombre" id="nombre">
 							</div>
 
-						    <div class="form-group col-6">
+						    <div class="form-group col-md-6">
 								<label for="descripcion">Descripción:</label>
 						      	<input type="text" class="form-control" v-model="categoria.descripcion" id="descripcion">
 						    </div>   
@@ -92,7 +93,7 @@
 				<div id="tabla">
 	                <div class="table-responsive">
                     <table class="table table-striped table-bordered table-condensed table-hover" >
-                        <thead>
+                        <thead class="text-center">
                             <!-- <th>#</th> -->
                             <th>Nombre</th>
                             <th>Descripción</th>
@@ -102,28 +103,20 @@
                         </thead>
 
                         
-                        <tr v-for="cat in categorias" :key="cat.id">
+                        <tr v-for="cat in categorias" :key="cat.id" class="text-center">
                             <!-- <td>{{ cat.id }}</td> -->
                             <td>{{ cat.nombre }}</td>
                             <td>{{ cat.descripcion }}</td>                                
                             <td>{{ formatDate(cat.created_at) }}</td>
-                            <td>{{ cat.trans }}</td>
+                            <td>{{ cat.transacciones_count }}</td>
                             <td class="text-center">
-                                <a href="#" class="btn btn-primary" title="Ver" v-on:click.prevent="showCategoria(cat.id)">
-                                    
-                                    <i class="fas fa-address-card" aria-hidden="true"></i>
-
-                                </a>
+                            	<a href="#" class="btn btn-primary" v-on:click.prevent="editCat(cat)"><i class="fas fa-edit" aria-hidden="true"></i> Editar</a>
                             </td>
+                            
                         </tr>
-                        
-                        <!-- <tr v-if="categorias.length === 0">
-                            <td colspan="10" class="text-center">
-                               No se encontraron registros
-                            </td>
-                        </tr> -->
                     </table>                    
                 </div>
+                
                 <div class="row" v-if="categorias.length > 0">
                 	<div class="col-md-1">
 		                <span class="badge badge-primary">Total: {{pagination.total}}</span>
@@ -159,6 +152,7 @@ import { es } from 'vuejs-datepicker/dist/locale';
 import moment from 'moment';
 import 'moment/locale/es';
 import CreateForm from '../categorias/CreateForm.vue';
+import EditForm from '../categorias/EditForm.vue';
     export default {
         data: function () {
   			return {
@@ -185,18 +179,25 @@ import CreateForm from '../categorias/CreateForm.vue';
     				created_at_hasta: ''		
 				},
     			categorias: [],
-    			pagination: {}    			
+    			pagination: {},
+    			editForm: {
+    				id: '',
+    				nombre: '',
+    				descripcion: ''			
+				},   			
   			}
 		},
 		components: {
         	Datepicker,
-        	CreateForm
+        	CreateForm,
+        	EditForm
     	},
         methods: {
  			buscar(page_url) {
  				var urlCategorias = page_url || 'api/categorias';
-	    		axios.post(urlCategorias,this.cliente).then(response => {
-	    			if (response.data.total > 0) {
+	    		axios.post(urlCategorias,this.categoria).then(response => {
+	    			console.log(response.data);
+	    			if (response.data.total > 0) {	    				
 	    				this.categorias = response.data.data;					
 	    				this.makePagination(response.data);
 	    			} else {
@@ -216,9 +217,17 @@ import CreateForm from '../categorias/CreateForm.vue';
 				}
 				this.pagination = pagination;
 			},
+			editCat(cat) {
+				this.editForm.id = cat.id;
+				this.editForm.nombre = cat.nombre;
+				this.editForm.descripcion = cat.descripcion;
+				$('#editCategoriaModal').modal('show');
+			},			
+        	updatedCat() {
+        		this.limpiar();
+        	},
 			formatDate(date) {
-				// return moment(date).format('DD/MM/YYYY');
-				return moment(date).fromNow();
+				return moment(date).format('DD/MM/YYYY');
 			},
         	limpiar() {
         		this.categoria.nombre = '';
@@ -240,9 +249,7 @@ import CreateForm from '../categorias/CreateForm.vue';
         	},
         },
         computed: {
-        	changeBoo: function () {
-      			this.cliente.active = !this.cliente.active;
-    		}
+        	
         }
     }
 </script>

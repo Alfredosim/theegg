@@ -3,14 +3,15 @@
     <h1>
     	<i class="fas fa-dollar-sign fa-lg" aria-hidden="true"></i> 
     	Transacciones
-    	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#createCategoriaModal"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i> Nueva Transacción</button>
+    	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#createTransModal"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i> Nueva Transacción</button>
     	
 	</h1>
 
 	<hr>
-	<!-- Modal -->
-	<create-form></create-form>
-	
+	<!-- Modal Create-->
+	<create-form :categorias="categorias"></create-form>
+	<!-- Modal Update-->
+	<edit-form :categorias="categorias" :editForm="editForm" @completed="updatedTran"></edit-form>
 
 	<div class="row">
 	    <div class="col-md-12">
@@ -23,17 +24,20 @@
 	                <form  @submit.prevent="buscar()" autocomplete="off">
 	                	<div class="row justify-content-center">
 
-							<div class="form-group col-3">
+							<div class="form-group col-md-3">
 								<label for="categoria">Categoría</label>	                    
-			                    <select class="form-control" id="categoria" v-model="categoria.rol">
-			                    	<option value="0" selected>Administrador</option>
-			                    	<option value="1">Normal</option>
+			                    <select class="form-control" id="categoria" v-model="transaccion.categoria_id">
+				                    
+				                    <option v-for="cat in categorias" :key="cat.id" :value="cat.id">{{cat.nombre}}
+				                    </option>
+				                                              
+			                    	
 			                    </select>
 							</div>
 
-						    <div class="form-group col-3">
-								<label for="trans">Tipo de transacción</label>	                    
-			                    <select class="form-control" id="trans" v-model="categoria.rol">
+						    <div class="form-group col-md-3">
+								<label for="tipo">Tipo de transacción</label>	                    
+			                    <select class="form-control" id="tipo" v-model="transaccion.tipo">
 			                    	<option value="0">Retiro</option>
 			                    	<option value="1">Deposito</option>
 			                    </select>
@@ -43,7 +47,7 @@
 						      	<label for="fechadesde">Fecha desde:</label>
 						      	<datepicker placeholder="dd/mm/aaaa" 
 						      				input-class="form-control" 
-						      				v-model="categoria.created_at_desde"
+						      				v-model="transaccion.created_at_desde"
 						      				@selected="disabledDate" 
 						      				format="dd/MM/yyyy"
 						      				id="fechadesde" 
@@ -58,7 +62,7 @@
 						      	<label for="fechahasta">Fecha hasta:</label>
 						      	<datepicker placeholder="dd/mm/aaaa"
 						      				input-class="form-control"
-						      				v-model="categoria.created_at_hasta"
+						      				v-model="transaccion.created_at_hasta"
 						      				@selected="disabledDate2"
 						      				format="dd/MM/yyyy"
 						      				id="fechahasta"
@@ -95,39 +99,42 @@
 				<div id="tabla">
 	                <div class="table-responsive">
                     <table class="table table-striped table-bordered table-condensed table-hover" >
-                        <thead>
+                        <thead class="text-center">
                             <!-- <th>#</th> -->
-                            <th>Usuario</th>
+                            <th>Asunto</th>
                             <th>Categoría</th>
                             <th>Monto</th>
                             <th>Fecha</th>
                             <th>Tipo</th>
+                            <th>Opciones</th>
                         </thead>
 
                         
-                        <tr v-for="cat in categorias" :key="cat.id">
+                        <tr v-for="tran in transacciones" :key="tran.id" class="text-center">
                             <!-- <td>{{ cat.id }}</td> -->
-                            <td>{{ cat.nombre }}</td>
-                            <td>{{ cat.descripcion }}</td>                                
-                            <td>{{ formatDate(cat.created_at) }}</td>
-                            <td>{{ cat.trans }}</td>
-                            <td class="text-center">
-                                <a href="#" class="btn btn-primary" title="Ver" v-on:click.prevent="showCategoria(cat.id)">
-                                    
-                                    <i class="fas fa-address-card" aria-hidden="true"></i>
-
-                                </a>
+                            <td>{{ tran.asunto }}</td>
+                            <td>{{ tran.categoria.nombre }}</td>
+                            <td>{{ tran.monto }}</td>                              
+                            <td>{{ formatDate(tran.fecha) }}</td>
+                            <td>
+                            	<span class="badge badge-danger" v-show="tran.tipo === 0">Retiro</span>
+       
+                                <span class="badge badge-success" v-show="tran.tipo === 1">Deposito</span>
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-primary" v-on:click.prevent="editTran(tran)"><i class="fas fa-edit" aria-hidden="true"></i> Editar</a>                                
+                                <a href="#" class="btn btn-danger" v-on:click.prevent="deleteTran(tran.id)"><i class="fas fa-trash" aria-hidden="true"></i> Eliminar</a>
                             </td>
                         </tr>
                         
-                        <!-- <tr v-if="categorias.length === 0">
+                        <!-- <tr v-if="transacciones.length === 0">
                             <td colspan="10" class="text-center">
                                No se encontraron registros
                             </td>
                         </tr> -->
                     </table>                    
                 </div>
-                <div class="row" v-if="categorias.length > 0">
+                <div class="row" v-if="transacciones.length > 0">
                 	<div class="col-md-1">
 		                <span class="badge badge-primary">Total: {{pagination.total}}</span>
 	            	</div>
@@ -161,7 +168,8 @@ import Datepicker from 'vuejs-datepicker';
 import { es } from 'vuejs-datepicker/dist/locale';
 import moment from 'moment';
 import 'moment/locale/es';
-import CreateForm from '../categorias/CreateForm.vue';
+import CreateForm from '../transacciones/CreateForm.vue';
+import EditForm from '../transacciones/EditForm.vue';
     export default {
         data: function () {
   			return {
@@ -181,32 +189,61 @@ import CreateForm from '../categorias/CreateForm.vue';
 					}
 				},
   				es,
-    			categoria: {
-    				nombre: '',
-    				descripcion: '',
+    			transaccion: {
+    				categoria_id: '',
+    				tipo: '',
     				created_at_desde: '',
     				created_at_hasta: ''		
 				},
+    			transacciones: [],
     			categorias: [],
-    			pagination: {}    			
+    			pagination: {},    			
+				editForm: {
+					id: '',
+    				asunto: '',
+    				categoria_id: '',
+    				monto: '',
+    				tipo: '',
+    				fecha: ''    				
+				},			
   			}
 		},
 		components: {
         	Datepicker,
-        	CreateForm
+        	CreateForm,
+        	EditForm
     	},
+    	mounted() {
+            this.listCat();
+        },
         methods: {
  			buscar(page_url) {
- 				var urlCategorias = page_url || 'api/categorias';
-	    		axios.post(urlCategorias,this.cliente).then(response => {
+ 				var urlTransacciones = page_url || 'api/transacciones';
+	    		axios.post(urlTransacciones,this.transaccion).then(response => {
 	    			if (response.data.total > 0) {
-	    				this.categorias = response.data.data;					
+	    				this.transacciones = response.data.data;					
 	    				this.makePagination(response.data);
 	    			} else {
-	    				this.categorias = [];					
+	    				this.transacciones = [];					
 	    				this.pagination = {};
-	    			}
-					
+	    			}					
+	    		});
+        	},
+        	deleteTran(id) {
+        		axios.delete('api/transaccion/'+ id).then(response => {
+	    			this.buscar();	    			
+	    			toastr.info(response.data.message);
+	    		}).catch(error => {
+	    			toastr.warning(error.responde.data.message);
+	    		});
+        	},
+        	listCat() { 				
+	    		axios.get('api/categoriasv2').then(response => {
+	    			if (response.data.data.length > 0) {
+	    				this.categorias = response.data.data;
+	    			} else {
+	    				this.categorias = [];
+	    			}					
 	    		});
         	},
         	makePagination(data) {
@@ -219,16 +256,27 @@ import CreateForm from '../categorias/CreateForm.vue';
 				}
 				this.pagination = pagination;
 			},
+			editTran(tran) {
+				this.editForm.id = tran.id;
+    			this.editForm.asunto = tran.asunto;
+    			this.editForm.categoria_id = tran.categoria_id;
+    			this.editForm.monto = tran.monto;
+    			this.editForm.tipo = tran.tipo;
+    			this.editForm.fecha = moment(tran.fecha).format('MM/DD/YYYY');
+				$('#editTransaccionModal').modal('show');
+			},			
+        	updatedTran() {
+        		this.limpiar();
+        	},
 			formatDate(date) {
-				// return moment(date).format('DD/MM/YYYY');
-				return moment(date).fromNow();
+				return moment(date).format('DD/MM/YYYY');				
 			},
         	limpiar() {
-        		this.categoria.nombre = '';
-				this.categoria.descripcion = '';
-				this.categoria.created_at_desde = '';
-				this.categoria.created_at_hasta = '';
-				this.categorias = [];
+        		this.transaccion.categoria_id = '';
+				this.transaccion.tipo = '';
+				this.transaccion.created_at_desde = '';
+				this.transaccion.created_at_hasta = '';
+				this.transacciones = [];
 				this.pagination = {};
 				this.state.disabledDates2.to = '';
 				this.state.disabledDates.from = '';
@@ -241,11 +289,6 @@ import CreateForm from '../categorias/CreateForm.vue';
         		// var hasta = this.cliente.created_at_desde;
         		this.state.disabledDates.from = new Date(date);
         	},
-        },
-        computed: {
-        	changeBoo: function () {
-      			this.cliente.active = !this.cliente.active;
-    		}
         }
     }
 </script>

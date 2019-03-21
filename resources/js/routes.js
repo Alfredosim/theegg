@@ -2,7 +2,6 @@ import Home from './components/Home.vue';
 import Transacciones from './components/transacciones/Main.vue';
 import Categoria from './components/categorias/Main.vue';
 import Usuario from './components/usuarios/Main.vue';
-import Calculadora from './components/Calculadora.vue';
 import Login from './components/auth/login.vue';
 
 export const routes = [
@@ -30,20 +29,6 @@ export const routes = [
 	{
 		path: '/usuarios',
 		component: Usuario,
-		meta: {
-            requiresAuth: true
-        }
-	},
-	{
-		path: '/pagos',
-		component: Calculadora,
-		meta: {
-            requiresAuth: true
-        }
-	},
-	{
-		path: '/calculadora',
-		component: Calculadora,
 		meta: {
             requiresAuth: true
         }
