@@ -48,7 +48,6 @@
 	  	</div>
 	</div>
 </template>
-
 <script>
 import ValidationErrors from '../ValidationErrors.vue';
     export default {

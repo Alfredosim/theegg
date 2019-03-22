@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Transaccion;
 use Auth;
 use Carbon\Carbon;
+use DB;
 
 class DashboardController extends Controller
 {
@@ -35,7 +36,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Retorna los registros de la semana actual.
+     * Retorna los registros de la semana.
      *
      * @return \Illuminate\Http\Response
      */
@@ -74,23 +75,32 @@ class DashboardController extends Controller
             ], 200);
     }
     /**
-     * Retorna los registros del ultimo mes.
+     * Retorna los registros del dia.
      *
      * @return \Illuminate\Http\Response
      */
-    public function lastMonth()
+    public function lastDay()
     {
-        $month = Carbon::now()->month;
-        
-        $trans = Transaccion::where('user_id', $this->user->id)
-                            ->whereMonth('fecha', $month)->get();
+        $day = Carbon::now()->day;        
+        $transOri = Transaccion::where('user_id',$this->user->id)
+                            ->whereDay('fecha', $day)->get();
 
-        $avr = $trans->avg('monto');
+        $countReti = $transOri->where('tipo', 0)->count();
+        $countDepo = $transOri->where('tipo', 1)->count();
+        
+        
+        $max = $transOri->max('monto');
+        $min = $transOri->min('monto');
+        $avr = $transOri->avg('monto');
+        $count = $transOri->count();        
 
         return response()->json([
-                'trans' => $trans,
-                'count' => $trans->count(),
-                'average' => $avr
+                'count' => $count,
+                'countDepo' => $countDepo,
+                'countReti' => $countReti,
+                'average' => $avr,
+                'max' => $max,
+                'min' => $min
             ], 200);
     }
     /**
@@ -101,12 +111,41 @@ class DashboardController extends Controller
     public function lastYear()
     {
         $year = Carbon::now()->year;
-        
+        $transOri = Transaccion::where('user_id', $this->user->id)
+                           ->whereYear('fecha', $year)->get();
+        $max = $transOri->max('monto');
+        $min = $transOri->min('monto');
+        $avr = $transOri->avg('monto');
+        $count = $transOri->count();
+
         $trans = Transaccion::where('user_id', $this->user->id)
-                            ->whereYear('fecha', $year)->get();
+                ->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])
+                ->get()
+                ->groupBy(function($date) {
+                    return Carbon::parse($date->fecha)->format('m'); // grouping by months
+                });
+
+        $transcount = [];
+        $data = [];
+
+        foreach ($trans as $key => $value) {
+            $transcount[(int)$key] = count($value);
+        }
+
+        for($i = 1; $i <= 12; $i++){
+            if(!empty($transcount[$i])){
+                $data[$i] = $transcount[$i];    
+            }else{
+                $data[$i] = 0;    
+            }
+        }
 
         return response()->json([
-                'trans' => $trans
+                'count' => $count,
+                'data' => $data,
+                'average' => $avr,
+                'max' => $max,
+                'min' => $min
             ], 200);
     }
 }

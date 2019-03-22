@@ -63,10 +63,7 @@ class TransaccionController extends Controller
             $fecha_hasta = date_create($request->input('created_at_hasta'));
             $fecha_hasta = date_format($fecha_hasta, 'Y-m-d');
 
-
-            $transaccion = $transaccion->whereDate('fecha', '>=', $fecha_desde);
-            $transaccion = $transaccion->whereDate('fecha', '<=',$fecha_hasta);
-            // $transaccion = $transaccion->whereBetween('created_at', [$fecha_desde, $fecha_hasta]);
+            $transaccion = $transaccion->whereBetween('fecha', [$fecha_desde, $fecha_hasta]);
 
         } else {
             Log::info('Sin fechas sin filtro');            

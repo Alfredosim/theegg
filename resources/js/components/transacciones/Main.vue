@@ -114,7 +114,7 @@
                             <!-- <td>{{ cat.id }}</td> -->
                             <td>{{ tran.asunto }}</td>
                             <td>{{ tran.categoria.nombre }}</td>
-                            <td>{{ tran.monto }}</td>                              
+                            <td>{{ formatNum(tran.monto) }}</td>                              
                             <td>{{ formatDate(tran.fecha) }}</td>
                             <td>
                             	<span class="badge badge-danger" v-show="tran.tipo === 0">Retiro</span>
@@ -126,12 +126,6 @@
                                 <a href="#" class="btn btn-danger" v-on:click.prevent="deleteTran(tran.id)"><i class="fas fa-trash" aria-hidden="true"></i> Eliminar</a>
                             </td>
                         </tr>
-                        
-                        <!-- <tr v-if="transacciones.length === 0">
-                            <td colspan="10" class="text-center">
-                               No se encontraron registros
-                            </td>
-                        </tr> -->
                     </table>                    
                 </div>
                 <div class="row" v-if="transacciones.length > 0">
@@ -154,20 +148,15 @@
 	        </div>
 	    </div>
 	</div>
-	<br>
-	<div>
-		{{ this.$data }}
-	</div>
-	
+	<br>	
 </div>
 </template>
-
 <script>
-
 import Datepicker from 'vuejs-datepicker';
 import { es } from 'vuejs-datepicker/dist/locale';
 import moment from 'moment';
 import 'moment/locale/es';
+import accounting from 'accounting';
 import CreateForm from '../transacciones/CreateForm.vue';
 import EditForm from '../transacciones/EditForm.vue';
     export default {
@@ -179,14 +168,8 @@ import EditForm from '../transacciones/EditForm.vue';
 					      new Date()
 					    ],
   					},
-  					disabledDates: {
-					    // to: new Date(), // Disable all dates up to specific date
-					    from: '', // DESDE Disable all dates after specific date
-					},
-					disabledDates2: {
-					    to: '', // HASTA Disable all dates up to specific date
-					    // from: '', // Disable all dates after specific date
-					}
+  					disabledDates: { from: '' },
+					disabledDates2: { to: '' }
 				},
   				es,
     			transaccion: {
@@ -270,6 +253,9 @@ import EditForm from '../transacciones/EditForm.vue';
         	},
 			formatDate(date) {
 				return moment(date).format('DD/MM/YYYY');				
+			},      	
+			formatNum(num) {
+				return accounting.formatMoney(num); 
 			},
         	limpiar() {
         		this.transaccion.categoria_id = '';
@@ -282,18 +268,11 @@ import EditForm from '../transacciones/EditForm.vue';
 				this.state.disabledDates.from = '';
         	},
         	disabledDate(date) {
-        		// var desde = this.cliente.created_at_desde;
         		this.state.disabledDates2.to = new Date(date);
         	},
         	disabledDate2(date) {
-        		// var hasta = this.cliente.created_at_desde;
         		this.state.disabledDates.from = new Date(date);
         	},
         }
     }
 </script>
-
-<style>
-
-
-</style>

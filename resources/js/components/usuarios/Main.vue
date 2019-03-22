@@ -92,11 +92,7 @@
 	        </div>
 	    </div>
 	</div>
-	<br>
-	<div>
-		{{ this.$data }}
-	</div>
-	
+	<br>	
 </div>
 </template>
 

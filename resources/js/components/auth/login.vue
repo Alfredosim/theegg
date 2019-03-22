@@ -29,20 +29,13 @@
                     
                     <button type="submit" class="btn btn-primary btn-lg btn-block">Iniciar sesión</button>
                   </form>
-
-                  <!-- <div class="text-center">
-                    <a class="d-block small mt-3" href="register.html">Register an Account</a>
-                    <a class="d-block small" href="forgot-password.html">Forgot Password?</a>
-                  </div> -->
             </div>
         </div>
     </div>
 </div> 
 </template>
-
 <script>
     import {login} from '../../helpers/auth';
-
     export default {
         name: "login",
         data() {
@@ -57,7 +50,6 @@
         methods: {
             login() {
                 this.$store.dispatch('login');
-
                 login(this.$data.form)
                     .then((res) => {
                         this.$store.commit("loginSuccess", res);
@@ -75,10 +67,3 @@
         }
     }
 </script>
-
-<style>
-
-
-
-
-</style>

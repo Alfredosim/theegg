@@ -49,11 +49,10 @@ Route::group(['middleware' => 'jwt.auth'], function ($router) {
     Route::delete('transaccion/{id}', 'TransaccionController@destroy');
 
     //Dashboard routes
-    
+    Route::get('dashboard', 'DashboardController@home');
+    Route::get('/lastday', 'DashboardController@lastDay');
+    Route::get('/lastweek', 'DashboardController@lastWeek');
+    Route::get('/lastyear', 'DashboardController@lastYear');
     
 });
 
-Route::get('dashboard', 'DashboardController@home');
-Route::get('/lastweek', 'DashboardController@lastWeek');
-Route::get('/lastmonth', 'DashboardController@lastMonth');
-Route::get('/lastyear', 'DashboardController@lastYear');

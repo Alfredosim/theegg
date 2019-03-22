@@ -11,7 +11,7 @@
     	<div class="card">
         	<div class="card-body text-center">
             	<i class="fas fa-dollar-sign fa-lg" aria-hidden="true"></i>
-            	<h4 class="card-title">{{stats.transCount}}</h4>
+            	<h4 class="card-title">{{formatNum(stats.transCount)}}</h4>
             
             	<p class="card-text"><small class="text-muted">TRANSACCIONES</small></p>
 
@@ -21,7 +21,7 @@
     	<div class="card">
         	<div class="card-body text-center">
             	<i class="fas fa-piggy-bank fa-lg" aria-hidden="true"></i>
-            	<h4 class="card-title">{{stats.depoCount}}</h4>
+            	<h4 class="card-title">{{ formatNum(stats.depoCount)}}</h4>
             
             	<p class="card-text"><small class="text-muted">DEPOSITOS</small></p>
 
@@ -31,7 +31,7 @@
     	<div class="card">
 	        <div class="card-body text-center">
 	            <i class="fas fa-hand-holding-usd fa-lg" aria-hidden="true"></i>
-	            <h4 class="card-title">{{stats.retiroCount}}</h4>
+	            <h4 class="card-title">{{formatNum(stats.retiroCount)}}</h4>
 	            
 	            <p class="card-text"><small class="text-muted">RETIROS</small></p>
 
@@ -49,9 +49,9 @@
 						    Filtro
 						  </button>
 						  <div class="dropdown-menu dropdown-menu-right">
-						    <button class="dropdown-item" type="button" @change="lastWeek()">Semana</button>
-						    <button class="dropdown-item" type="button" @change="lastMonth()">Mes</button>
-						    <button class="dropdown-item" type="button" @change="lastYear()">Año</button>
+						    <button class="dropdown-item" type="button" @click="day()">Dia</button>
+						    <button class="dropdown-item" type="button" @click="week()">Semana</button>
+						    <button class="dropdown-item" type="button" @click="year()">Año</button>
 						  </div>
 					</div>				
 	            </div>
@@ -66,16 +66,25 @@
 					            </div>
 
 					            <div class="card-body">
-					            	<bar
-								      v-if="loaded"
+					            	
+					            	<doughnut v-if="loaded && filtro == 0"
 								      :chartdata="chartdata"
 								      :options="options"/>
+
+
+					            	<bar
+								      v-if="loaded && filtro == 1"
+								      :chartdata="chartdata"
+								      :options="options"/>								    
 								    
-								    <div v-else class="alert alert-info" role="alert">
-										  No tienes transacciones...
-									</div>
+								    
+
+									<line-chart
+								      v-if="loaded && filtro == 2"
+								      :chartdata="chartdata"
+								      :options="options"/>
 																		    
-					                </div>
+					            </div>
 					        </div>
 					    </div>
 
@@ -91,27 +100,27 @@
 								  
 										<div class="card-body">
 										    <h1 class="card-title">{{ fill.count }}</h1>
-										    <h3 class="card-text">Cantidad Transacciones</h3>
+										    <h3 class="card-text">Transacciones</h3>
 										</div>
 									</div>
 									<div class="card text-white bg-info mb-3 text-center">
 								  
 										<div class="card-body">
-										    <h1 class="card-title">{{ fill.avg }} $</h1>
+										    <h1 class="card-title">{{ formatNum(fill.avg) }}</h1>
 										    <h3 class="card-text">Promedio</h3>
 										</div>
 									</div>
 									<div class="card text-white bg-success mb-3 text-center">
 								  
 										<div class="card-body">
-										    <h1 class="card-title">{{ fill.max }} $</h1>
+										    <h1 class="card-title">{{ formatNum(fill.max) }}</h1>
 										    <h3 class="card-text">Monto Mayor</h3>
 										</div>
 									</div>
 									<div class="card text-white bg-danger mb-3 text-center">
 								  
 										<div class="card-body">
-										    <h1 class="card-title">{{ fill.min }} $</h1>
+										    <h1 class="card-title">{{ formatNum(fill.min) }}</h1>
 										    <h3 class="card-text">Monto Menor</h3>
 										</div>
 									</div>		            		                
@@ -128,7 +137,10 @@
 
 <script>
 import Bar from './charts/Bar.vue';
+import LineChart from './charts/Line.vue';
+import Doughnut from './charts/Doughnut.vue';
 import moment from 'moment';
+import accounting from 'accounting';
 import 'moment/locale/es';
     export default {
         data: function () {
@@ -148,21 +160,21 @@ import 'moment/locale/es';
   				filtro: '',
   				options: null,
 	  			chartdata: {
-			        labels: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'],
+			        labels: [],
 			        datasets: [
 			        	{
-			        		label: 'Transacciones Semanales',
-			        		backgroundColor: '#f87979', 
+			        		label: '',
+			        		backgroundColor: '', 
 			        		data: []
 			        	}
 			        ]
 		        },
     		}
 		},
-		components: { Bar },
+		components: { Bar, LineChart, Doughnut },
     	mounted() {
             this.buscar();
-            this.lastWeek();
+            this.day();
         },
         methods: {
  			buscar() {
@@ -173,16 +185,20 @@ import 'moment/locale/es';
 		    		this.stats.retiroCount = response.data.retiroCount;
 	    		});
         	},
-        	lastWeek() {
+        	day() {
         		this.loaded = false
-	    		axios.get('api/lastweek').then(response => {	    		
+	    		axios.get('api/lastday').then(response => {	    		
 		    		this.fill.avg = response.data.average;
 		    		this.fill.max = response.data.max;
 		    		this.fill.min = response.data.min;
 		    		this.fill.count = response.data.count;
 		    		if (this.fill.count > 0) {
-		    			this.chartdata.datasets[0].data = response.data.data;
+		    			this.chartdata.labels = ['Retiros', 'Depositos'];
+		    			this.chartdata.datasets[0].backgroundColor = ['#ec7063', '#2ecc71'];
+		    			this.chartdata.datasets[0].data.push(response.data.countReti);
+		    			this.chartdata.datasets[0].data.push(response.data.countDepo);
 		    			this.loaded = true;
+		    			this.filtro = 0;
 		    		} else {
 		    			this.loaded = false
 		    		}		    		
@@ -191,38 +207,57 @@ import 'moment/locale/es';
 	    			console.log(error.response.data)
 	    		});
         	},
-        	lastMonth() {
-	    		axios.get('api/lastmonth').then(response => {
-		    		console.log(response.data);
-		    		this.stats.transCount = response.data.transCount;			
-		    		this.stats.depoCount = response.data.depoCount;
-		    		this.stats.retiroCount = response.data.retiroCount;
+        	week() {
+        		this.loaded = false
+	    		axios.get('api/lastweek').then(response => {	    		
+		    		this.fill.avg = response.data.average;
+		    		this.fill.max = response.data.max;
+		    		this.fill.min = response.data.min;
+		    		this.fill.count = response.data.count;
+		    		if (this.fill.count > 0) {
+		    			this.chartdata.labels = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+		    			this.chartdata.datasets[0].label = 'Transacciones Semanales';
+		    			this.chartdata.datasets[0].backgroundColor = '#f87979';
+		    			this.chartdata.datasets[0].data = response.data.data;
+		    			this.loaded = true;
+		    			this.filtro = 1;
+		    		} else {
+		    			this.loaded = false
+		    		}		    		
+	    		}).catch(error => {
+	    			this.loaded = false
+	    			console.log(error.response.data)
 	    		});
         	},
-        	lastYear() {
+        	year() {
+        		this.loaded = false
 	    		axios.get('api/lastyear').then(response => {
-		    		console.log(response.data);
-		    		this.stats.transCount = response.data.transCount;			
-		    		this.stats.depoCount = response.data.depoCount;
-		    		this.stats.retiroCount = response.data.retiroCount;
+	    			console.log(response.data.data)    		
+		    		this.fill.avg = response.data.average;
+		    		this.fill.max = response.data.max;
+		    		this.fill.min = response.data.min;
+		    		this.fill.count = response.data.count;
+		    		if (this.fill.count > 0) {
+		    			this.chartdata.labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+		    			this.chartdata.datasets[0].label = 'Transacciones Mensuales';
+		    			this.chartdata.datasets[0].backgroundColor = '#5dade2';
+		    			this.chartdata.datasets[0].data = Object.values(response.data.data);
+		    			this.loaded = true;
+		    			this.filtro = 2;
+		    		} else {
+		    			this.loaded = false
+		    		}		    		
+	    		}).catch(error => {
+	    			this.loaded = false
+	    			console.log(error.response.data)
 	    		});
-        	}
-        },
-        computed: {
-        	add: function () {
-
-    		},
-        }
-    }
+        	},        	
+			formatNum(num) {
+				return accounting.formatMoney(num); 
+			},
+        }    
+}
 </script>
 <style>
-  .small {
-    width: 500px; 
-    height: 500px;
-  }
-  .prome {
-    width: 300px; 
-    height: 300px;
-  }
 
 </style>

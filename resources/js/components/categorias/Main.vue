@@ -101,7 +101,6 @@
                             <th>Numero de transacciones</th>
                             <th>Opciones</th>
                         </thead>
-
                         
                         <tr v-for="cat in categorias" :key="cat.id" class="text-center">
                             <!-- <td>{{ cat.id }}</td> -->
@@ -111,8 +110,7 @@
                             <td>{{ cat.transacciones_count }}</td>
                             <td class="text-center">
                             	<a href="#" class="btn btn-primary" v-on:click.prevent="editCat(cat)"><i class="fas fa-edit" aria-hidden="true"></i> Editar</a>
-                            </td>
-                            
+                            </td>                            
                         </tr>
                     </table>                    
                 </div>
@@ -130,23 +128,16 @@
 		                    </ul>
 		                </nav>
 	            	</div>
-        		</div>
-	                    
+        		</div>	                    
 	            </div>
 				</div>
 	        </div>
 	    </div>
 	</div>
 	<br>
-	<div>
-		{{ this.$data }}
-	</div>
-	
 </div>
 </template>
-
 <script>
-
 import Datepicker from 'vuejs-datepicker';
 import { es } from 'vuejs-datepicker/dist/locale';
 import moment from 'moment';
@@ -162,14 +153,8 @@ import EditForm from '../categorias/EditForm.vue';
 					      new Date()
 					    ],
   					},
-  					disabledDates: {
-					    // to: new Date(), // Disable all dates up to specific date
-					    from: '', // DESDE Disable all dates after specific date
-					},
-					disabledDates2: {
-					    to: '', // HASTA Disable all dates up to specific date
-					    // from: '', // Disable all dates after specific date
-					}
+  					disabledDates: { from: '' },
+					disabledDates2: { to: '' }
 				},
   				es,
     			categoria: {
@@ -203,8 +188,7 @@ import EditForm from '../categorias/EditForm.vue';
 	    			} else {
 	    				this.categorias = [];					
 	    				this.pagination = {};
-	    			}
-					
+	    			}					
 	    		});
         	},
         	makePagination(data) {
@@ -240,21 +224,11 @@ import EditForm from '../categorias/EditForm.vue';
 				this.state.disabledDates.from = '';
         	},
         	disabledDate(date) {
-        		// var desde = this.cliente.created_at_desde;
         		this.state.disabledDates2.to = new Date(date);
         	},
         	disabledDate2(date) {
-        		// var hasta = this.cliente.created_at_desde;
         		this.state.disabledDates.from = new Date(date);
         	},
-        },
-        computed: {
-        	
         }
     }
 </script>
-
-<style>
-
-
-</style>

@@ -17,7 +17,7 @@
 
                 <li class="nav-item">
 
-                    <router-link class="nav-link" to="/">
+                    <router-link class="nav-link" active-class="active" to="/" exact>
                         <i class="fas fa-home fa-lg blanco" aria-hidden="true"></i> Inicio
                     </router-link>
 
@@ -25,7 +25,7 @@
 
                 <li class="nav-item">
 
-                    <router-link class="nav-link" to="/transacciones">
+                    <router-link class="nav-link" active-class="active" to="/transacciones">
                         <i class="fas fa-dollar-sign fa-lg verde" aria-hidden="true"></i>
                         Transacciones
                     </router-link>
@@ -34,7 +34,7 @@
 
                 <li class="nav-item">
 
-                    <router-link class="nav-link" to="/categorias">
+                    <router-link class="nav-link" active-class="active" to="/categorias">
                         <i class="fas fa-briefcase fa-lg rojo" aria-hidden="true"></i>
                         Categorías
                     </router-link>
@@ -43,7 +43,7 @@
 
                 <li class="nav-item" v-if="currentUser.rol == 0">
 
-                    <router-link class="nav-link active" to="/usuarios">
+                    <router-link class="nav-link" active-class="active" to="/usuarios">
                         <i class="fas fa-users fa-lg azul" aria-hidden="true"></i> Usuarios
                     </router-link>
 

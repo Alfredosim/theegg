@@ -33,21 +33,16 @@
     .blanco {
         color: #f8fff9;
     }
-
     .azul {
         color: #30a5ff;
     }
-
     .rojo {
         color: #ff6056;
     }
-
     .verde {
         color: #72ff74;
     }
-
     .amarillo {
         color: #fff67f;
     }
-
 </style>
