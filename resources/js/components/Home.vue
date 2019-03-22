@@ -49,9 +49,9 @@
 						    Filtro
 						  </button>
 						  <div class="dropdown-menu dropdown-menu-right">
-						    <button class="dropdown-item" type="button" @click="day()">Dia</button>
-						    <button class="dropdown-item" type="button" @click="week()">Semana</button>
-						    <button class="dropdown-item" type="button" @click="year()">Año</button>
+						    <button class="dropdown-item" :class="[{active: filtro == 0}]" type="button" @click="day()">Dia</button>
+						    <button class="dropdown-item" :class="[{active: filtro == 1}]" type="button" @click="week()">Semana</button>
+						    <button class="dropdown-item" :class="[{active: filtro == 2}]" type="button" @click="year()">Año</button>
 						  </div>
 					</div>				
 	            </div>
@@ -61,7 +61,7 @@
 					    <div class="col-md-6">
 					        <div class="card">
 					            <div class="card-header">
-					            	<i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i> Última Semana 
+					            	<i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i> Transacciones
 						            				
 					            </div>
 
@@ -195,6 +195,7 @@ import 'moment/locale/es';
 		    		if (this.fill.count > 0) {
 		    			this.chartdata.labels = ['Retiros', 'Depositos'];
 		    			this.chartdata.datasets[0].backgroundColor = ['#ec7063', '#2ecc71'];
+		    			this.chartdata.datasets[0].data = [];
 		    			this.chartdata.datasets[0].data.push(response.data.countReti);
 		    			this.chartdata.datasets[0].data.push(response.data.countDepo);
 		    			this.loaded = true;

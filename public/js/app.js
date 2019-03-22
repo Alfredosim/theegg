@@ -70025,7 +70025,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -70281,6 +70281,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				if (_this2.fill.count > 0) {
 					_this2.chartdata.labels = ['Retiros', 'Depositos'];
 					_this2.chartdata.datasets[0].backgroundColor = ['#ec7063', '#2ecc71'];
+					_this2.chartdata.datasets[0].data = [];
 					_this2.chartdata.datasets[0].data.push(response.data.countReti);
 					_this2.chartdata.datasets[0].data.push(response.data.countDepo);
 					_this2.loaded = true;
@@ -85758,6 +85759,7 @@ var render = function() {
                   "button",
                   {
                     staticClass: "dropdown-item",
+                    class: [{ active: _vm.filtro == 0 }],
                     attrs: { type: "button" },
                     on: {
                       click: function($event) {
@@ -85772,6 +85774,7 @@ var render = function() {
                   "button",
                   {
                     staticClass: "dropdown-item",
+                    class: [{ active: _vm.filtro == 1 }],
                     attrs: { type: "button" },
                     on: {
                       click: function($event) {
@@ -85786,6 +85789,7 @@ var render = function() {
                   "button",
                   {
                     staticClass: "dropdown-item",
+                    class: [{ active: _vm.filtro == 2 }],
                     attrs: { type: "button" },
                     on: {
                       click: function($event) {
@@ -85977,7 +85981,7 @@ var staticRenderFns = [
         attrs: { "aria-hidden": "true" }
       }),
       _vm._v(
-        " Última Semana \r\n\t\t\t\t\t\t            \t\t\t\t\r\n\t\t\t\t\t            "
+        " Transacciones\r\n\t\t\t\t\t\t            \t\t\t\t\r\n\t\t\t\t\t            "
       )
     ])
   },
@@ -86779,7 +86783,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: { type: "text", id: "monto", required: "" },
+                        attrs: { type: "number", id: "monto", required: "" },
                         domProps: { value: _vm.transaccionForm.monto },
                         on: {
                           input: function($event) {

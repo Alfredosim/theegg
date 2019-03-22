@@ -37,7 +37,7 @@
             	<div class="form-row">
 	                <div class="form-group col-md-6">
 	                    <label for="monto">Monto (*)</label>
-	                    <input type="text" class="form-control" v-model="transaccionForm.monto" id="monto" required>
+	                    <input type="number" class="form-control" v-model="transaccionForm.monto" id="monto" required>
 	                </div>
 	               
 	                <div class="form-group col-md-6">								
